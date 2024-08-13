@@ -1,0 +1,45 @@
+# Bytecode-Dateien
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Projekt- und Umgebungsspezifische Dateien
+*.env
+*.venv/
+*.virtualenv/
+*.tox/
+*.nox/
+*.coverage
+*.pytest_cache/
+*.hypothesis/
+*.mypy_cache/
+.dmypy.json
+.mypy_cache/
+*.pylint.d
+*.ropeproject
+*.nox/
+*.tox/
+*.coverage
+*.coverage.*
+*.cache
+*.log
+*.sqlite3
+*.db
+
+# IDEs und Editor-spezifische Dateien
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+*.kate-swp
+*~
+
+# Betriebssystem-spezifische Dateien
+.DS_Store
+Thumbs.db
+Desktop.ini
+
