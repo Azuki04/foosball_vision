@@ -28,8 +28,10 @@ def get_trackbar_values(window_name: str) -> tuple:
 def display_hsv_values(h_min: int, s_min: int, v_min: int, h_max: int, s_max: int, v_max: int, previous_values: tuple) -> tuple:
     """Display the HSV values if they have changed."""
     if (h_min, s_min, v_min, h_max, s_max, v_max) != previous_values:
+        print("*" * 50)
         print(f"(hMin = {h_min}, sMin = {s_min}, vMin = {v_min}), "
               f"(hMax = {h_max}, sMax = {s_max}, vMax = {v_max})")
+        print("*" * 50)  
         return h_min, s_min, v_min, h_max, s_max, v_max
     return previous_values
 
@@ -51,13 +53,13 @@ def process_frame(frame, window_name: str, previous_values: tuple) -> tuple:
 
 
 def main(video_path: str=None, image_path: str=None) -> None:
-    window_name:str = 'HSV-Calibration'
+    window_name: str = 'HSV-Calibration'
     cv2.namedWindow(window_name)
     initialize_trackbar(window_name)
 
     previous_values: tuple = (0, 0, 0, 179, 255, 255)
 
-    if i is not None:
+    if video_path is not None:
         try:
             video_path = int(video_path)
         except ValueError:
