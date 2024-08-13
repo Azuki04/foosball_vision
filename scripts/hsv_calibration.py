@@ -4,7 +4,7 @@ import sys
 import argparse
 
 
-def initialize_trackbar(window_name):
+def initialize_trackbar(window_name: str) -> None:
     """Initialize trackbars for HSV calibration."""
     cv2.createTrackbar('HMin', window_name, 0, 179, lambda x: None)
     cv2.createTrackbar('SMin', window_name, 0, 255, lambda x: None)
@@ -14,18 +14,18 @@ def initialize_trackbar(window_name):
     cv2.createTrackbar('VMax', window_name, 255, 255, lambda x: None)
 
 
-def get_trackbar_values(window_name):
+def get_trackbar_values(window_name: str) -> tuple:
     """Retrieve the current positions of the HSV trackbars."""
-    h_min = cv2.getTrackbarPos('HMin', window_name)
-    s_min = cv2.getTrackbarPos('SMin', window_name)
-    v_min = cv2.getTrackbarPos('VMin', window_name)
-    h_max = cv2.getTrackbarPos('HMax', window_name)
-    s_max = cv2.getTrackbarPos('SMax', window_name)
-    v_max = cv2.getTrackbarPos('VMax', window_name)
+    h_min: int = cv2.getTrackbarPos('HMin', window_name)
+    s_min: int = cv2.getTrackbarPos('SMin', window_name)
+    v_min: int = cv2.getTrackbarPos('VMin', window_name)
+    h_max: int = cv2.getTrackbarPos('HMax', window_name)
+    s_max: int = cv2.getTrackbarPos('SMax', window_name)
+    v_max: int = cv2.getTrackbarPos('VMax', window_name)
     return h_min, s_min, v_min, h_max, s_max, v_max
 
 
-def display_hsv_values(h_min, s_min, v_min, h_max, s_max, v_max, previous_values):
+def display_hsv_values(h_min: int, s_min: int, v_min: int, h_max: int, s_max: int, v_max: int, previous_values: tuple) -> tuple:
     """Display the HSV values if they have changed."""
     if (h_min, s_min, v_min, h_max, s_max, v_max) != previous_values:
         print(f"(hMin = {h_min}, sMin = {s_min}, vMin = {v_min}), "
@@ -34,7 +34,7 @@ def display_hsv_values(h_min, s_min, v_min, h_max, s_max, v_max, previous_values
     return previous_values
 
 
-def process_frame(frame, window_name, previous_values):
+def process_frame(frame, window_name: str, previous_values: tuple) -> tuple:
     """Process the given frame, apply HSV mask and show the result."""
     h_min, s_min, v_min, h_max, s_max, v_max = get_trackbar_values(window_name)
 
@@ -50,14 +50,14 @@ def process_frame(frame, window_name, previous_values):
     return previous_values
 
 
-def main(video_path=None, image_path=None):
-    window_name = 'HSV-Calibration'
+def main(video_path: str=None, image_path: str=None) -> None:
+    window_name:str = 'HSV-Calibration'
     cv2.namedWindow(window_name)
     initialize_trackbar(window_name)
 
-    previous_values = (0, 0, 0, 179, 255, 255)
+    previous_values: tuple = (0, 0, 0, 179, 255, 255)
 
-    if video_path is not None:
+    if i is not None:
         try:
             video_path = int(video_path)
         except ValueError:
@@ -74,7 +74,7 @@ def main(video_path=None, image_path=None):
                 print("Error: Could not read frame.")
                 break
 
-            previous_values = process_frame(frame, window_name, previous_values)
+            previous_values: tuple = process_frame(frame, window_name, previous_values)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -88,7 +88,7 @@ def main(video_path=None, image_path=None):
             sys.exit()
 
         while True:
-            previous_values = process_frame(img, window_name, previous_values)
+            previous_values: tuple = process_frame(img, window_name, previous_values)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break

@@ -1,11 +1,13 @@
 import cv2
+from typing import Final
 
-ARUCO_DICT = cv2.aruco.DICT_6X6_250
-SQUARES_VERTICALLY = 7
-SQUARES_HORIZONTALLY = 5
-SQUARE_LENGTH = 30  
-MARKER_LENGTH = 15  
-MARGIN_PX = 20  
+
+ARUCO_DICT: Final[int] = cv2.aruco.DICT_6X6_250
+SQUARES_VERTICALLY: Final[int] = 7
+SQUARES_HORIZONTALLY: Final[int] = 5
+SQUARE_LENGTH: Final[int] = 30  
+MARKER_LENGTH: Final[int] = 15  
+MARGIN_PX: Final[int] = 20  
 
 IMG_SIZE = (2480, 3508)  
 OUTPUT_NAME = 'ChArUco_Marker_A4.png'

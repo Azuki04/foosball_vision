@@ -1,14 +1,16 @@
+from typing import Final
 import numpy as np
 import cv2 as cv
 import glob
 
+
 # 1. Calibration Settings
 # Number of internal corners on the chessboard (not the number of squares)
-CORNERS_X = 7  # Number of corners along the width (horizontal)
-CORNERS_Y = 7  # Number of corners along the height (vertical)
+CORNERS_X: Final[int] = 7  # Number of corners along the width (horizontal)
+CORNERS_Y: Final[int] = 7  # Number of corners along the height (vertical)
 
 # Size of a chessboard square in millimeters
-SQUARE_SIZE_MM = 20  # Adjust this to your chessboard square size
+SQUARE_SIZE_MM: Final[int] = 20  # Adjust this to your chessboard square size
 
 # Termination criteria for refining corner detection (accuracy and iterations)
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -24,7 +26,7 @@ image_points = []   # Corresponding 2D points in image plane
 
 # 3. Load Calibration Images
 # Specify the path to your calibration images
-CALIBRATION_IMAGES_PATH = '../data/raw/calibration/*.jpg'
+CALIBRATION_IMAGES_PATH: Final[str] = '../data/raw/calibration/*.jpg'
 images = sorted(glob.glob(CALIBRATION_IMAGES_PATH))
 
 # 4. Process Each Image
@@ -57,7 +59,7 @@ ret, camera_matrix, distortion_coefficients, rotation_vectors, translation_vecto
 
 # 6. Save Calibration Results
 # Save the camera matrix and distortion coefficients for future use
-RESULT_OUTPUT_PATH = "../config/calibration.yml"
+RESULT_OUTPUT_PATH: Final[str] = "../config/calibration.yml"
 calibration_file = cv.FileStorage(RESULT_OUTPUT_PATH, cv.FILE_STORAGE_WRITE)
 calibration_file.write("camera_matrix", camera_matrix)
 calibration_file.write("distortion_coefficients", distortion_coefficients)
