@@ -1,0 +1,4 @@
+opencv-python~=4.10.0.84
+ultralytics~=8.2.47
+torch~=2.2.2
+numpy~=1.26.4
