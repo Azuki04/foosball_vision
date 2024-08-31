@@ -10,7 +10,7 @@ MARKER_LENGTH: Final[int] = 15
 MARGIN_PX: Final[int] = 20  
 
 IMG_SIZE = (2480, 3508)  
-OUTPUT_NAME = 'ChArUco_Marker_A4.png'
+OUTPUT_PATH: Final[str] = '../data/processed/charuco/ChArUco_Maker_A4.png'
 
 def create_and_save_new_board():
     dictionary = cv2.aruco.getPredefinedDictionary(ARUCO_DICT)
@@ -23,9 +23,9 @@ def create_and_save_new_board():
 
     img = board.generateImage(IMG_SIZE, MARGIN_PX, 1)
 
-    cv2.imwrite(OUTPUT_NAME, img)
+    cv2.imwrite(OUTPUT_PATH, img)
 
-    print(f"ChArUco-Board as {OUTPUT_NAME} saved")
+    print(f"ChArUco-Board as {OUTPUT_PATH} saved")
 
 
 create_and_save_new_board()
