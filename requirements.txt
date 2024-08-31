@@ -3,3 +3,6 @@ ultralytics~=8.2.47
 torch~=2.2.2
 numpy~=1.26.4
 setuptools~=72.2.0
+cvzone ~= 1.6.1
+pandas ~= 2.2.2
+sklearn ~= 1.5.1
