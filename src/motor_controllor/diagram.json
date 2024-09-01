@@ -1,0 +1,148 @@
+{
+    "version": 1,
+    "author": "David Forrest",
+    "editor": "wokwi",
+    "parts": [
+      { "type": "wokwi-arduino-uno", "id": "uno", "top": 0.6, "left": -0.6, "attrs": {} },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv1",
+        "top": -129.4,
+        "left": 34,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv2",
+        "top": -131.23,
+        "left": 118.47,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv3",
+        "top": -131.78,
+        "left": 203.74,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv4",
+        "top": -129.4,
+        "left": 293.2,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper1",
+        "top": -523.49,
+        "left": -258.32,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper2",
+        "top": -526.58,
+        "left": -19.81,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper3",
+        "top": -531.22,
+        "left": 218.52,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper4",
+        "top": -532.77,
+        "left": 452.19,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper5",
+        "top": -523.49,
+        "left": -498.32,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-stepper-motor",
+        "id": "stepper6",
+        "top": -533.09,
+        "left": 692.08,
+        "attrs": { "arrow": "green" }
+      },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv5",
+        "top": -129.4,
+        "left": -52.4,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      },
+      {
+        "type": "wokwi-a4988",
+        "id": "drv6",
+        "top": -129.4,
+        "left": 379.6,
+        "rotate": 270,
+        "attrs": { "color": "green" }
+      }
+    ],
+    "connections": [
+      [ "uno:2", "drv1:STEP", "green", [ "v-33.23", "h-62.05" ] ],
+      [ "uno:3", "drv2:STEP", "green", [ "v-39.7", "h-24.07" ] ],
+      [ "uno:4", "drv3:STEP", "green", [ "v-28.05", "h29.45" ] ],
+      [ "uno:5", "drv1:DIR", "green", [ "v-26.76", "h-93.11" ] ],
+      [ "uno:6", "drv2:DIR", "green", [ "v-44.76", "h-13.13" ] ],
+      [ "uno:7", "drv3:DIR", "green", [ "v-20.89", "h61.33" ] ],
+      [ "drv1:ENABLE", "drv2:ENABLE", "green", [ "v23.97", "h83.44" ] ],
+      [ "drv2:ENABLE", "drv3:ENABLE", "green", [ "v20.8", "h36.04" ] ],
+      [ "drv3:ENABLE", "drv4:ENABLE", "green", [ "v22.96", "h51.92" ] ],
+      [ "uno:12", "drv4:STEP", "green", [ "v-16.25", "h18.76" ] ],
+      [ "uno:13", "drv4:DIR", "green", [ "v-12.05", "h236.27" ] ],
+      [ "drv4:SLEEP", "drv4:RESET", "green", [ "v12.08", "h-2.33" ] ],
+      [ "drv3:SLEEP", "drv3:RESET", "green", [ "v9.31", "h0.77" ] ],
+      [ "drv2:SLEEP", "drv2:RESET", "green", [ "v9.81", "h-6.41" ] ],
+      [ "drv1:SLEEP", "drv1:RESET", "green", [ "v9.6", "h-4.15" ] ],
+      [ "drv1:2B", "stepper1:A-", "green", [ "v-61.04", "h-198.05" ] ],
+      [ "drv1:2A", "stepper1:A+", "green", [ "v-71.54", "h-131.7" ] ],
+      [ "drv1:1A", "stepper1:B+", "green", [ "v-75.58", "h-113.02" ] ],
+      [ "drv1:1B", "stepper1:B-", "green", [ "v-84.47", "h-85.45" ] ],
+      [ "drv2:2B", "stepper2:A-", "green", [ "v-96.07", "h-44.69" ] ],
+      [ "drv2:2A", "stepper2:A+", "green", [ "v-101.72", "h-48.64" ] ],
+      [ "drv2:1A", "stepper2:B+", "green", [ "v-108.19", "h-31.57" ] ],
+      [ "drv2:1B", "stepper2:B-", "green", [ "v-116.27", "h-47.64" ] ],
+      [ "drv3:2B", "stepper3:A-", "green", [ "v-137.86", "h50.32" ] ],
+      [ "stepper3:A+", "drv3:2A", "green", [ "v44.77", "h-70.23" ] ],
+      [ "stepper3:B+", "drv3:1A", "green", [ "v51.63", "h-39.59" ] ],
+      [ "stepper3:B-", "drv3:1B", "green", [ "v59.26", "h-81.61" ] ],
+      [ "stepper4:A-", "drv4:2B", "green", [ "v78.24", "h-231.82" ] ],
+      [ "stepper4:A+", "drv4:2A", "green", [ "v86.74", "h-50.79" ] ],
+      [ "stepper4:B+", "drv4:1A", "green", [ "v95.23", "h-216.86" ] ],
+      [ "stepper4:B-", "drv4:1B", "green", [ "v103.72", "h-190.07" ] ],
+      [ "drv5:SLEEP", "drv5:RESET", "green", [ "v9.6", "h-4.15" ] ],
+      [ "drv6:SLEEP", "drv6:RESET", "green", [ "v9.6", "h-4.15" ] ],
+      [ "stepper5:B-", "drv5:1B", "green", [ "v134.4", "h364.71" ] ],
+      [ "stepper5:B+", "drv5:1A", "green", [ "v144", "h364.72" ] ],
+      [ "stepper5:A+", "drv5:2A", "green", [ "v153.6", "h364.72" ] ],
+      [ "stepper5:A-", "drv5:2B", "green", [ "v163.2", "h364.72" ] ],
+      [ "drv5:STEP", "uno:11", "green", [ "v57.6", "h144" ] ],
+      [ "drv5:DIR", "uno:10", "green", [ "v38.4", "h143.9" ] ],
+      [ "stepper6:A-", "drv6:2B", "green", [ "v134.4", "h-393.68" ] ],
+      [ "stepper6:A+", "drv6:2A", "green", [ "v144", "h-393.68" ] ],
+      [ "stepper6:B+", "drv6:1A", "green", [ "v153.6", "h-393.68" ] ],
+      [ "stepper6:B-", "drv6:1B", "green", [ "v163.2", "h-393.69" ] ],
+      [ "drv6:ENABLE", "drv4:ENABLE", "green", [ "v19.2", "h-86.4" ] ],
+      [ "drv1:ENABLE", "drv5:ENABLE", "green", [ "v19.2", "h-86.4" ] ],
+      [ "drv6:STEP", "uno:9", "green", [ "v28.8", "h-269.6" ] ],
+      [ "drv6:DIR", "uno:8", "green", [ "v38.4", "h-269.2" ] ]
+    ],
+    "dependencies": {}
+  }
