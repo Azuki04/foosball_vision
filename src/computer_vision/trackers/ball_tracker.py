@@ -31,7 +31,7 @@ class BallTracker:
             img_color, mask = self.my_color_finder.update(img, self.hsv_vals)
 
             # Find contours
-            img_contours, contours = cvzone.findContours(img, mask, minArea=500)
+            img_contours, contours = cvzone.findContours(img, mask, minArea=500,maxArea=600, filter=[8])
 
             # Track the ball if contours are found
             if contours:
