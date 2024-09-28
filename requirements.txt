@@ -6,3 +6,6 @@ setuptools~=72.2.0
 cvzone ~= 1.6.1
 pandas ~= 2.2.2
 sklearn ~= 1.5.1
+PyYAML~=6.0.2
+matplotlib~=3.9.2
+scikit-learn~=1.5.1
