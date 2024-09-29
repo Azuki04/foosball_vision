@@ -70,7 +70,7 @@ ret, camera_matrix, distortion_coefficients, rotation_vectors, translation_vecto
 )
 
 # 6. Save Calibration Results
-RESULT_OUTPUT_PATH: Final[str] = "../config/calibration.yml"
+RESULT_OUTPUT_PATH: Final[str] = "../config/camera_calibration.yaml"
 os.makedirs(os.path.dirname(RESULT_OUTPUT_PATH), exist_ok=True)
 calibration_file = cv.FileStorage(RESULT_OUTPUT_PATH, cv.FILE_STORAGE_WRITE)
 calibration_file.write("camera_matrix", camera_matrix)
