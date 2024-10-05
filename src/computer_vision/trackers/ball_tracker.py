@@ -19,8 +19,8 @@ class BallTracker:
 
     def detect_frames(self, frame):
         # Process the image to find the ball
-        img_color, mask = self.my_color_finder.update(frame, self.hsv_vals)
-        # Find contours in the mask
+        img_color, mask = self.get_mask(frame)
+
         img_contours, contours = cvzone.findContours(frame, mask, minArea=300, maxArea=6000, filter=[8,9,10])
 
         # Track the ball if contours are found
@@ -45,6 +45,14 @@ class BallTracker:
         self.draw_ball_path(img_contours)
 
         return img_color, mask, img_contours
+
+    def get_mask(self, frame):
+        img_color, mask = self.my_color_finder.update(frame, self.hsv_vals)
+        mask = cv2.GaussianBlur(mask, (3, 3), 0)
+        kernel = np.ones((3, 3), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        return img_color, mask
 
     def interpolate_missing_values(self):
         if self.pos_list_x:
