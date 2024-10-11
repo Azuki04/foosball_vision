@@ -8,7 +8,7 @@ def opencv_matrix_constructor(loader, node):
     rows = matrix_data['rows']
     cols = matrix_data['cols']
     data = matrix_data['data']
-    matrix = np.array(data).reshape((rows, cols))
+    matrix = np.array(data, dtype=np.float64).reshape((rows, cols))
     return matrix
 
 yaml.add_constructor('tag:yaml.org,2002:opencv-matrix', opencv_matrix_constructor, Loader=yaml.SafeLoader)
@@ -27,6 +27,8 @@ class CameraSetup:
 
         self.camera_matrix = None
         self.dist_coeffs = None
+        self.new_camera_matrix = None  # To store the optimal new camera matrix
+
         if calibration_file:
             self.load_calibration(calibration_file)
 
@@ -34,19 +36,18 @@ class CameraSetup:
         """Loads the calibration data from a YAML file."""
         with open(calibration_file, 'r') as file:
             calibration_data = yaml.safe_load(file)
-            self.camera_matrix = np.array(calibration_data['camera_matrix'].data).reshape(3, 3)
-            self.dist_coeffs = np.array(calibration_data['distortion_coefficients'].data).reshape(1, 5)
+            self.camera_matrix = calibration_data['camera_matrix']
+            self.dist_coeffs = calibration_data['distortion_coefficients']
 
-    def undistorted_frame(self, frame):
+        self.new_camera_matrix, _ = cv2.getOptimalNewCameraMatrix(
+            self.camera_matrix, self.dist_coeffs, (self.width, self.height), 1, (self.width, self.height)
+        )
+        print('Calibration data loaded successfully.')
+
+    def undistort_frame(self, frame):
         """Applies the calibration to undistort the frame."""
         if self.camera_matrix is not None and self.dist_coeffs is not None:
-            h, w = frame.shape[:2]
-            new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(
-                self.camera_matrix, self.dist_coeffs, (w, h), 1, (w, h)
-            )
-            undistorted_frame = cv2.undistort(frame, self.camera_matrix, self.dist_coeffs, None, new_camera_matrix)
-            x, y, w, h = roi
-            undistorted_frame = undistorted_frame[y:y + h, x:x + w]
+            undistorted_frame = cv2.undistort(frame, self.camera_matrix, self.dist_coeffs, None, self.new_camera_matrix)
             print('Frame is undistorted')
             return undistorted_frame
         print('Frame is not undistorted')
@@ -56,7 +57,7 @@ class CameraSetup:
         """Reads a frame from the camera and applies undistortion if calibration is available."""
         ret, frame = self.cap.read()
         if ret:
-            return self.undistorted_frame(frame)
+            return self.undistort_frame(frame)
         return None
 
     def release(self):
