@@ -5,10 +5,11 @@ def main():
 
     print(torch.backends.mps.is_available())
 
-    model = YOLO('yolov10n.pt')
+    model = YOLO('../data/processed/model/yolo11n-best.pt')
 
     source = 0
-    model.predict(source=source, imgsz=640, save=False, show=True, device="mps")
+    #device="mps"
+    model.predict(source=source, imgsz=640, save=False, show=True)
 
 if __name__ == '__main__':
     main()
