@@ -39,6 +39,8 @@ For more details about YOLO / Ultralytics, please visit the official [ultralytic
    ```
 4. The script will output the camera matrix and distortion coefficients, which you can use for undistorting images.
 
+**Note**:
+   More information can be found on this page: [Camera Calibration](https://medium.com/@nflorent7/a-comprehensive-guide-to-camera-calibration-using-charuco-boards-and-opencv-for-perspective-9a0fa71ada5f).
 ---
 ## Training
 
