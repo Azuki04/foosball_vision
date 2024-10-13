@@ -1,7 +1,7 @@
 opencv-python~=4.10.0.84
 ultralytics~=8.3.9
 torch~=2.2.2
-numpy~=2.1.2
+numpy~=1.26.4
 setuptools~=75.1.0
 cvzone ~= 1.6.1
 pandas ~= 2.2.3
