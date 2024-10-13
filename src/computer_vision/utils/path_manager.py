@@ -22,3 +22,11 @@ def get_config_path():
 
 def get_config(filename: str):
     return os.path.join(get_config_path(), filename)
+
+
+def get_weight_path():
+    return os.path.join(os.path.dirname(__file__), '..', '..', '..', 'weights')
+
+
+def get_weight(filename: str):
+    return os.path.join(get_weight_path(), filename)
