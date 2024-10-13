@@ -37,6 +37,9 @@
      │                                      ││
      └──────────────────────────────────────┘▼
 """
+COURT_HSV_VALS = {'hmin': 35, 'smin': 40, 'vmin': 40, 'hmax': 85, 'smax': 255, 'vmax': 255}
+BALL_HSV_VALS = {'hmin': 24, 'smin': 107, 'vmin': 127, 'hmax': 179, 'smax': 255, 'vmax': 255}
+
 TABLE_HEIGHT = 675.0
 TABLE_WIDTH = 370.0
 
@@ -44,8 +47,8 @@ PLR_WIDTH = 14.0
 PLR_GAP = 95.0
 BUMPER_WIDTH = 10.0
 
-FIELD_WIDTH = 346.0
-FIELD_HEIGHT = 600.0
+COURT_WIDTH = 346.0
+COURT_HEIGHT = 600.0
 
 
 #******************************************************************************
@@ -53,7 +56,7 @@ FIELD_HEIGHT = 600.0
 # ******************************************************************************
 
 FPS = 60
-CAMERA_ID = 0
+CAMERA_ID = 1
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
 
