@@ -42,12 +42,51 @@ For more details about YOLO / Ultralytics, please visit the official [ultralytic
 **Note**:
    More information can be found on this page: [Camera Calibration](https://medium.com/@nflorent7/a-comprehensive-guide-to-camera-calibration-using-charuco-boards-and-opencv-for-perspective-9a0fa71ada5f).
 ---
-## Training
+## YOLO Training
 
-I used Google Colab for training the YOLO model. The training script is available in the `train_yolo.ipynb` notebook. You can run the notebook in Google Colab to train the model on your custom dataset.
+I used Google Colab for training the YOLO model. The training script is available in the `script/train_yolo.ipynb` notebook. You can run the notebook in Google Colab to train the model on your custom dataset.
+
+This is how the results look like after training the model: 
+
+<table>
+  <tr>
+    <td><img src="data/raw/images/yolo_train_result_1.jpg" alt="yolo train result 1" width="300"/></td>
+    <td><img src="data/raw/images/yolo_train_result_2.jpg" alt="yolo train result 2" width="300"/></td>
+  </tr>
+</table>
+
+---
+
+
+### Run Ball Tracker 
 
 
 ---
+
+# Run the Arduino Motor Simulation
+
+To run the simulation, you need to use Visual Studio Code (VSCode). Follow the steps below to guide you through the process:
+
+For a detailed video tutorial, visit: [Run Wokwi on VSCode](https://www.youtube.com/watch?v=9pTZL934k2s).
+
+### Steps:
+1. **Install Extensions:**
+   - Install the **PlatformIO** and **Wokwi Simulator** extensions in VSCode.
+
+2. **Open PlatformIO:**
+   - Click on the **PlatformIO** icon in VSCode.
+
+3. **Open the Project:**
+   - Open the `motor_controller` folder within PlatformIO in VSCode.
+
+4. **Run the Simulation:**
+   - Navigate to `main.cpp` and click on the **Run on Wokwi** button.
+
+5. **View the Simulation:**
+   - Open `diagram.json` to view the simulation.
+
+---
+
 ### How to upload and download large files to the repository
 
 To add large files to the repository, use git lfs. To install git lfs, run the following commands:
@@ -63,6 +102,6 @@ Every file you upload is tracked by git lfs.
 
 
 ## Credits
-Project developed by [Sy Viet Dao](https://github.com/Azuki04).  
+Software developed by [Sy Viet Dao](https://github.com/Azuki04).  
 _Completed in October 2024._
 
