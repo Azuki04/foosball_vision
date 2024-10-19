@@ -1,6 +1,5 @@
-#include <Arduino.h>
-
 void setup() {
+  Serial.begin(9600);
   // Motor 1
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
@@ -32,7 +31,7 @@ void setup() {
   digitalWrite(10, LOW);
 }
 
-void loop() {
+void command(){
   digitalWrite(5, HIGH);
   digitalWrite(9, HIGH);
   digitalWrite(13, HIGH);
@@ -92,3 +91,12 @@ void loop() {
 
   delay(500);
 }
+
+
+void loop() {
+    if(Serial.available()){
+    command();
+    }
+}
+
+
