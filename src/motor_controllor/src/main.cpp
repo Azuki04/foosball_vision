@@ -184,6 +184,50 @@
         }
     }
 
+
+    void resetSystem() {
+        memset(pos, 0, sizeof(pos));
+        memset(target_pos, 0, sizeof(target_pos));
+        kick_motors = 0b000000;
+
+        long max_pos[NUM_MOTORS];
+        for (int i = 0; i < NUM_MOTORS; i++) {
+            if (i < 3) {
+                max_pos[i] = MAX_STEPS_LINEAR;
+            } else {
+                max_pos[i] = MAX_STEPS_ANGULAR;
+            }
+        }
+        array_copy(max_pos, target_pos, NUM_MOTORS);
+        updateMotors();
+
+        long max_steps[NUM_MOTORS];
+        distang2pos(target_pos, max_steps);
+        array_copy(max_steps, pos, NUM_MOTORS);
+
+        delay(1000);
+
+        long zero_pos[NUM_MOTORS] = {0, 0, 0, 0, 0, 0};
+        array_copy(zero_pos, target_pos, NUM_MOTORS);
+        updateMotors();
+
+        long zero_steps[NUM_MOTORS];
+        distang2pos(target_pos, zero_steps);
+        array_copy(zero_steps, pos, NUM_MOTORS);
+
+        delay(1000);
+
+        long initial_pos[NUM_MOTORS] = {30, 30, 30, 90, 90, 90};
+        array_copy(initial_pos, target_pos, NUM_MOTORS);
+        updateMotors();
+
+        long initial_steps[NUM_MOTORS];
+        distang2pos(target_pos, initial_steps);
+        array_copy(initial_steps, pos, NUM_MOTORS);
+
+        delay(1000); 
+    }
+
     //------------------------------------------------------------------------------
     // Arduino functions
     //------------------------------------------------------------------------------
@@ -191,22 +235,39 @@
     void setup() {
         Serial.begin(9600);
         setup_controller();
-
-        long initial_pos[NUM_MOTORS] = {30, 30, 30, 90, 90, 90};
-        array_copy(initial_pos, target_pos, NUM_MOTORS);
-        updateMotors();
-
-
-        long initial_steps[NUM_MOTORS];
-        distang2pos(target_pos, initial_steps);
-        array_copy(initial_steps, pos, NUM_MOTORS);
+        resetSystem();
+        Serial.println("Setup complete");
     }
 
     void loop() {
-        // TODO: Implement the main loop
-        long x = 90;
-        long y = 60;
-        command(x, y);
+        if (Serial.available()) {
+            String data = Serial.readStringUntil('\n');
+            int commaIndex = data.indexOf(',');
+            if (commaIndex != -1) {
+                String xString = data.substring(0, commaIndex);
+                String yString = data.substring(commaIndex + 1);
 
-        delay(2000);
+                int x = xString.toInt();
+                int y = yString.toInt();
+
+                Serial.print("Received x: ");
+                Serial.println(x);
+                Serial.print("Received y: ");
+                Serial.println(y);
+
+                command(x, y);
+            }
+        }
     }
+
+    //------------------------------------------------------------------------------
+    // Simulator Test Loop
+    //------------------------------------------------------------------------------
+     /*
+         void loop() {
+            long x = 90;
+            long y = 60;
+            command(x, y);
+            delay(2000);
+        }
+     */
