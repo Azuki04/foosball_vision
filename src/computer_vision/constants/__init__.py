@@ -65,7 +65,7 @@ CAMERA_HEIGHT = 480
 # ARDUINO Constants
 # ******************************************************************************
 
-SERIAL_URL = '/dev/tty.usbserial-2140'
+SERIAL_URL = '/dev/cu.usbserial-140'
 BAUD_RATE = 9600
 
 

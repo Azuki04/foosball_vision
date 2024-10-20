@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-import pandas as pd
-from sklearn.linear_model import LinearRegression
 from ultralytics import YOLO
 
+from computer_vision.prediction.ball_shot_predictor import BallPredictor
 from computer_vision.utils.camera_setup import CameraSetup
 from computer_vision.utils.path_manager import get_weight, get_config
 
@@ -15,8 +14,10 @@ class BallTracker:
 
         self.ball_class_index = 0
 
-        self.pos_list_x, self.pos_list_y = [], []
-        self.max_positions = 5
+        self.predictor = BallPredictor()
+
+        self.current_x = None
+        self.current_y = None
 
         self.last_position = None
 
@@ -27,98 +28,67 @@ class BallTracker:
         ball_detections = [d for d in detections if int(d.cls[0]) == self.ball_class_index]
 
         if ball_detections:
+            centers, confidences = self.extract_ball_info(ball_detections)
+
             if self.last_position is not None:
-                max_distance = np.hypot(frame.shape[1], frame.shape[0])
-
-                min_combined_score = float('inf')
-                selected_ball = None
-                for ball in ball_detections:
-                    x1, y1, x2, y2 = ball.xyxy[0].cpu().numpy()
-                    center_x = int((x1 + x2) / 2)
-                    center_y = int((y1 + y2) / 2)
-                    distance = np.hypot(center_x - self.last_position[0], center_y - self.last_position[1])
-                    normalized_distance = distance / max_distance
-
-                    confidence = ball.conf[0].item()
-
-                    alpha = 0.5
-                    beta = 0.5
-                    score = alpha * normalized_distance - beta * confidence
-
-                    if score < min_combined_score:
-                        min_combined_score = score
-                        selected_ball = ball
+                selected_index = self.select_best_ball(centers, confidences, frame)
             else:
-                selected_ball = max(ball_detections, key=lambda x: x.conf[0])
+                selected_index = np.argmax(confidences)
 
-            x1, y1, x2, y2 = selected_ball.xyxy[0].cpu().numpy()
-            center_x = int((x1 + x2) / 2)
-            center_y = int((y1 + y2) / 2)
+            selected_ball = ball_detections[selected_index]
+            center_x, center_y = centers[selected_index]
+
+
             self.last_position = (center_x, center_y)
+            self.current_x = int(center_x)
+            self.current_y = int(center_y)
 
-            self.pos_list_x.append(center_x)
-            self.pos_list_y.append(center_y)
 
-            cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
-            cv2.circle(frame, (center_x, center_y), 5, (0, 255, 0), cv2.FILLED)
+            self.predictor.add_position(self.current_x, self.current_y)
+
+            self.draw_selected_ball(frame, selected_ball, self.current_x, self.current_y)
         else:
-            print("FEHLER: Ball nicht gefunden!")
-            self.interpolate_missing_values()
+            print("Ball not detected")
+            self.predictor.interpolate_missing_values()
             self.last_position = None
+            self.current_x = self.predictor.pos_list_x[-1] if self.predictor.pos_list_x else None
+            self.current_y = self.predictor.pos_list_y[-1] if self.predictor.pos_list_y else None
 
-        if len(self.pos_list_x) > self.max_positions:
-            self.pos_list_x.pop(0)
-            self.pos_list_y.pop(0)
-
-        if len(self.pos_list_x) >= 3:
-            self.calculate_shot_direction(frame)
-
-        self.draw_ball_path(frame)
-
+        self.predictor.calculate_shot_direction(frame)
+        self.predictor.draw_ball_path(frame)
         return frame
 
-    def interpolate_missing_values(self):
-        if self.pos_list_x:
-            data = {'x': self.pos_list_x, 'y': self.pos_list_y}
-            df = pd.DataFrame(data)
-            df = df.interpolate(method='linear').bfill().ffill()
-            self.pos_list_x, self.pos_list_y = df['x'].tolist(), df['y'].tolist()
 
-    @staticmethod
-    def weighted_linear_regression(time_steps, ball_positions) -> LinearRegression:
-        weights = np.exp(np.linspace(0, 1, len(time_steps)))
-        model = LinearRegression()
-        model.fit(time_steps, ball_positions, sample_weight=weights)
-        return model
+    def extract_ball_info(self, ball_detections):
+        centers = []
+        confidences = []
+        for ball in ball_detections:
+            x1, y1, x2, y2 = ball.xyxy[0].cpu().numpy()
+            center_x = (x1 + x2) / 2
+            center_y = (y1 + y2) / 2
+            centers.append((center_x, center_y))
+            confidences.append(ball.conf[0].item())
+        centers = np.array(centers)
+        confidences = np.array(confidences)
+        return centers, confidences
 
-    def calculate_shot_direction(self, frame) -> None:
-        time_steps = np.array(range(len(self.pos_list_x))).reshape(-1, 1)
-        ball_positions_x = np.array(self.pos_list_x).reshape(-1, 1)
-        ball_positions_y = np.array(self.pos_list_y).reshape(-1, 1)
+    def select_best_ball(self, centers, confidences, frame):
+        last_pos_array = np.array(self.last_position)
+        distances = np.linalg.norm(centers - last_pos_array, axis=1)
+        max_distance = np.hypot(frame.shape[1], frame.shape[0])
+        normalized_distances = distances / max_distance
 
-        reg_x = self.weighted_linear_regression(time_steps, ball_positions_x)
-        reg_y = self.weighted_linear_regression(time_steps, ball_positions_y)
+        alpha = 0.5
+        beta = 0.5
+        scores = alpha * normalized_distances - beta * confidences
 
-        direction_slope_x = reg_x.coef_[0][0]
-        direction_slope_y = reg_y.coef_[0][0]
+        min_index = np.argmin(scores)
+        return min_index
 
-        future_position_x = int(self.pos_list_x[-1] + direction_slope_x * 10)
-        future_position_y = int(self.pos_list_y[-1] + direction_slope_y * 10)
-
-        current_position = (self.pos_list_x[-1], self.pos_list_y[-1])
-        future_position = (future_position_x, future_position_y)
-        cv2.arrowedLine(frame, current_position, future_position, (0, 0, 255), 3)
-
-        print(f"Direction vector: ({direction_slope_x}, {direction_slope_y})")
-
-    def draw_ball_path(self, frame):
-        if self.pos_list_x and self.pos_list_y:
-            for i, (posX, posY) in enumerate(zip(self.pos_list_x, self.pos_list_y)):
-                pos = (posX, posY)
-                cv2.circle(frame, pos, 5, (0, 255, 0), cv2.FILLED)
-                if i >= 1:
-                    cv2.line(frame, pos, (self.pos_list_x[i - 1], self.pos_list_y[i - 1]), (0, 255, 0), 2)
-
+    def draw_selected_ball(self, frame, selected_ball, center_x, center_y):
+        x1, y1, x2, y2 = selected_ball.xyxy[0].cpu().numpy()
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+        cv2.circle(frame, (center_x, center_y), 5, (0, 255, 0), cv2.FILLED)
 
 if __name__ == "__main__":
 
