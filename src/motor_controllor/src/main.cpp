@@ -7,7 +7,7 @@
     //------------------------------------------------------------------------------
     // global variables
     //------------------------------------------------------------------------------
-    long pos[NUM_MOTORS] = {0, 0, 0, 0, 0, 0};
+    long current_pos[NUM_MOTORS] = {0, 0, 0, 0, 0, 0};
     long target_pos[NUM_MOTORS] = {0, 0, 0, 0, 0, 0};
     uint8_t kick_motors = 0b000000;
 
@@ -23,10 +23,6 @@
         return pre_flag | (0b1 << n);
     }
 
-    uint8_t bitFlip2(int n, uint8_t pre_flag) {
-        return pre_flag & ~(0b1 << n);
-    }
-
     boolean checkflag(uint8_t flag) {
         return (flag & 0b111111) != 0;
     }
@@ -37,72 +33,69 @@
         }
     }
 
-    long dist2pos(long distance) {
-        return (STEPS_PER_ROTATION * distance) / LINEAR_MOVEMENT_ROTATION;
+    long convertDistanceToSteps(long distance) {
+        return constrain((STEPS_PER_ROTATION * distance) / LINEAR_MOVEMENT_ROTATION, 0, MAX_STEPS_LINEAR); // [0 ... 450]
     }
 
-    long ang2pos(long angle) {
-        return (STEPS_PER_ROTATION * angle) / 360;
+    long convertAngleToSteps(long angle) {
+        return constrain((STEPS_PER_ROTATION * angle) / 360, 0, MAX_STEPS_ANGULAR); // [0 ... 126]
     }
 
-    void distang2pos(long *distang, long *steps) {
-        for (int i = 0; i < NUM_MOTORS; i++) {
-            if (i < 3) {
-                steps[i] = dist2pos(distang[i]);
-                steps[i] = constrain(steps[i], 0, MAX_STEPS_LINEAR);
+    void convertDistanceAndAngleToSteps(long *distanceAndAngle, long *motorSteps) {
+        for (int motorIndex = 0; motorIndex < NUM_MOTORS; motorIndex++) {
+            if (motorIndex < 3) {
+                motorSteps[motorIndex] = convertDistanceToSteps(distanceAndAngle[motorIndex]);
+                motorSteps[motorIndex] = constrain(motorSteps[motorIndex], 0, MAX_STEPS_LINEAR);
             } else {
-                steps[i] = ang2pos(distang[i]);
-                steps[i] = constrain(steps[i], 0, MAX_STEPS_ANGULAR);
+                motorSteps[motorIndex] = convertAngleToSteps(distanceAndAngle[motorIndex]);
+                motorSteps[motorIndex] = constrain(motorSteps[motorIndex], 0, MAX_STEPS_ANGULAR);
             }
         }
     }
 
     int xIndex(long x) {
-        int index = x / (field_size[0] / 6);
+        int index = x / (FIELD_SIZE[0] / 6);
         return index;
     }
 
-    long y2pos(long y) {
-        long y_tmp = y % (field_size[1] / 3);
-        long position = y_tmp - player_size / 2;
-        position = constrain(position, 0, max_y);
-        return position;
+    long calculatePlayerPosition(long y) {
+          long sectionOffset = y % (FIELD_SIZE[1] / 3);
+          long centeredPosition = sectionOffset - PLAYER_SIZE / 2;
+          centeredPosition = constrain(centeredPosition, 0, MAX_TRAVEL_DISTANCE);
+          return centeredPosition;
     }
 
     void stepMotor(int motor, long steps, int dir) {
+
+        void (*motorStepFunctions[])(int) = {m1step, m2step, m3step, m4step, m5step, m6step};
+
+        if (motor < 1 || motor > 6) {
+            return;
+        }
         for (long i = 0; i < steps; i++) {
-            switch (motor) {
-                case 1: m1step(dir); break;
-                case 2: m2step(dir); break;
-                case 3: m3step(dir); break;
-                case 4: m4step(dir); break;
-                case 5: m5step(dir); break;
-                case 6: m6step(dir); break;
-            }
-            delayMicroseconds(500);
+            motorStepFunctions[motor - 1](dir);
+            // delayMicroseconds(500);
         }
     }
 
     void setMotorPosition(int motor, long targetPosition) {
-        long currentPosition = pos[motor - 1];
-        long max_steps = (motor <= 3) ? MAX_STEPS_LINEAR : MAX_STEPS_ANGULAR;
-        targetPosition = constrain(targetPosition, 0, max_steps);
+        long currentPosition = current_pos[motor - 1];
 
-        long steps = abs(targetPosition - currentPosition);
-        int direction = (targetPosition > currentPosition) ? 1 : 0;
+        long stepsRequired = (motor <= 3)
+                    ? convertDistanceToSteps(abs(targetPosition - currentPosition))
+                    : convertAngleToSteps(abs(targetPosition - currentPosition));
 
-        if (steps > 0) {
-            stepMotor(motor, steps, direction);
-            pos[motor - 1] = targetPosition;
+        int direction = (targetPosition > currentPosition) ? 0 : 1; // 0 = forward, 1 = backward
+
+        if (stepsRequired > 0) {
+            stepMotor(motor, stepsRequired, direction);
+            current_pos[motor - 1] = target_pos[motor - 1];
         }
     }
 
     void updateMotors() {
-        long target_steps[NUM_MOTORS];
-        distang2pos(target_pos, target_steps);
-
-        for (int i = 0; i < NUM_MOTORS; i++) {
-            setMotorPosition(i + 1, target_steps[i]);
+        for (int motorIndex = 0; motorIndex < NUM_MOTORS; motorIndex++) {
+            setMotorPosition(motorIndex + 1, target_pos[motorIndex]);
         }
     }
 
@@ -111,16 +104,19 @@
     //------------------------------------------------------------------------------
 
     void defense(long y, int x_index) {
-        int motor_num = (x_index - 1) / 2;
-        motor_num = constrain(motor_num, 0, 2);
+        // Index [1,3,5] for defense
+        int lin_motor_num = (x_index - 1) / 2; // Possible values [0,1,2]
+        lin_motor_num = constrain(lin_motor_num, 0, 2);
 
-        for (int i = 3; i > motor_num; i--) {
+        // Set rotational motors up for the ball shoot
+        for (int i = 2; i > lin_motor_num; i--) { // [5,4]
             target_pos[i + 3] = 45;
         }
 
-        for (int i = motor_num; i >= 0; i--) {
+        // Set rotational motors down for the ball shoot and linear motors to the ball position
+        for (int i = lin_motor_num; i >= 0; i--) {
             target_pos[i + 3] = 75;
-            target_pos[i] = y2pos(y);
+            target_pos[i] = calculatePlayerPosition(y);
         }
 
         updateMotors();
@@ -131,15 +127,16 @@
         long take_back_angle = 45;
         long follow_through_angle = 130;
 
-        for (int i = 3; i < 6; i++) {
+        for (int i = 3; i < 5; i++) {
             if (checkBit(i, motors)) {
                 target_pos[i] = take_back_angle;
             }
         }
+
         updateMotors();
         delay(100);
 
-        for (int i = 3; i < 6; i++) {
+        for (int i = 3; i < 5; i++) {
             if (checkBit(i, motors)) {
                 target_pos[i] = follow_through_angle;
             }
@@ -148,21 +145,21 @@
     }
 
     void offense(long y, int x_index) {
-        int motor_num = x_index / 2;
-        motor_num = constrain(motor_num, 0, 2);
+        int lin_motor_num = x_index / 2; // [0,1,2]
+        lin_motor_num = constrain(lin_motor_num, 0, 2);
 
-        for (int i = 3; i > motor_num; i--) {
+        for (int i = 2; i > lin_motor_num; i--) {
             target_pos[i + 3] = 30;
         }
 
-        for (int i = motor_num - 1; i >= 0; i--) {
+        for (int i = lin_motor_num - 1; i >= 0; i--) {
             target_pos[i + 3] = 90;
         }
 
-        target_pos[motor_num] = y2pos(y);
+        target_pos[lin_motor_num] = calculatePlayerPosition(y);
 
-        if (checkBit(motor_num + 3, kick_motors) == 0) {
-            kick_motors = bitFlip(motor_num + 3, kick_motors);
+        if (checkBit(lin_motor_num + 3, kick_motors) == 0) {
+            kick_motors = bitFlip(lin_motor_num + 3, kick_motors);
         }
 
         updateMotors();
@@ -174,10 +171,10 @@
     }
 
     void command(long x, long y) {
-        y = field_size[1] - y;
+        //y = field_size[1] - y;
         int x_index = xIndex(x);
 
-        if (x_index % 2 == 1) {
+        if (x_index % 2 == 1) { // offense = odd index AND defense = even index
             defense(y, x_index);
         } else {
             offense(y, x_index);
@@ -202,7 +199,7 @@
         updateMotors();
 
         long max_steps[NUM_MOTORS];
-        distang2pos(target_pos, max_steps);
+        convertDistanceAndAngleToSteps(target_pos, max_steps);
         array_copy(max_steps, pos, NUM_MOTORS);
 
         delay(1000);
@@ -212,7 +209,7 @@
         updateMotors();
 
         long zero_steps[NUM_MOTORS];
-        distang2pos(target_pos, zero_steps);
+        convertDistanceAndAngleToSteps(target_pos, zero_steps);
         array_copy(zero_steps, pos, NUM_MOTORS);
 
         delay(1000);
@@ -222,7 +219,7 @@
         updateMotors();
 
         long initial_steps[NUM_MOTORS];
-        distang2pos(target_pos, initial_steps);
+        convertDistanceAndAngleToSteps(target_pos, initial_steps);
         array_copy(initial_steps, pos, NUM_MOTORS);
 
         delay(1000); 
@@ -235,8 +232,17 @@
     void setup() {
         Serial.begin(9600);
         setup_controller();
-        resetSystem();
-        Serial.println("Setup complete");
+
+        long initial_pos[NUM_MOTORS] = {0, 0, 0, 90, 90, 90};
+        array_copy(initial_pos, target_pos, NUM_MOTORS);
+        updateMotors();
+
+
+        long initial_steps[NUM_MOTORS];
+        convertDistanceAndAngleToSteps(target_pos, initial_steps);
+        array_copy(initial_steps, pos, NUM_MOTORS);
+
+
     }
 
     void loop() {
@@ -249,11 +255,6 @@
 
                 int x = xString.toInt();
                 int y = yString.toInt();
-
-                Serial.print("Received x: ");
-                Serial.println(x);
-                Serial.print("Received y: ");
-                Serial.println(y);
 
                 command(x, y);
             }

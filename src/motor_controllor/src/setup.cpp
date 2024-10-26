@@ -45,49 +45,49 @@
 void m1step(int dir) {
     digitalWrite(M1_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M1_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M1_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void m2step(int dir) {
     digitalWrite(M2_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M2_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M2_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void m3step(int dir) {
     digitalWrite(M3_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M3_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M3_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void m4step(int dir) {
     digitalWrite(M4_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M4_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M4_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void m5step(int dir) {
     digitalWrite(M5_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M5_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M5_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void m6step(int dir) {
     digitalWrite(M6_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M6_STEP, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(M6_STEP, LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
 }
 
 void setup_controller() {
