@@ -57,14 +57,15 @@ class CourtLineDetector:
         rect[2] = pts[np.argmax(diff)]
         return rect
 
-    def detect_frames(self, frame):
+    def detect_frames(self, frame, update_court_pts=True):
         img_colour, mask = self.get_mask(frame)
 
-        pts = self.find_largest_contour(mask)
-        if pts is not None:
-            pts = self.order_points(pts.reshape(4, 2))
-            self.last_pts = pts
-            self.court_pts = pts
+        if update_court_pts:
+            pts = self.find_largest_contour(mask)
+            if pts is not None:
+                pts = self.order_points(pts.reshape(4, 2))
+                self.last_pts = pts
+                self.court_pts = pts
 
         if self.last_pts is not None:
             self.draw_contours(frame, self.last_pts)
