@@ -30,12 +30,12 @@
 // Configuration for Bar 3 (M6 - M3)
 
 // Rotation (M6)
-#define M6_STEP 13
+#define M6_STEP 10
 #define M6_DIR  12
 
 // Linear (M3)
 #define M3_STEP 11
-#define M3_DIR  10
+#define M3_DIR  13
  
 
 //------------------------------------------------------------------------------
@@ -69,25 +69,25 @@ void m3step(int dir) {
 void m4step(int dir) {
     digitalWrite(M4_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M4_STEP, HIGH);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
     digitalWrite(M4_STEP, LOW);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
 }
 
 void m5step(int dir) {
     digitalWrite(M5_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M5_STEP, HIGH);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
     digitalWrite(M5_STEP, LOW);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
 }
 
 void m6step(int dir) {
     digitalWrite(M6_DIR, dir == 1 ? HIGH : LOW);
     digitalWrite(M6_STEP, HIGH);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
     digitalWrite(M6_STEP, LOW);
-    delayMicroseconds(400);
+    delayMicroseconds(500);
 }
 
 void setup_controller() {
