@@ -48,7 +48,6 @@ class BallTracker:
 
             self.draw_selected_ball(frame, selected_ball, self.current_x, self.current_y)
         else:
-            print("Ball not detected")
             self.predictor.interpolate_missing_values()
             self.last_position = None
             self.current_x = self.predictor.pos_list_x[-1] if self.predictor.pos_list_x else None

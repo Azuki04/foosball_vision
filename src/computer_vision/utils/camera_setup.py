@@ -27,7 +27,7 @@ class CameraSetup:
 
         self.camera_matrix = None
         self.dist_coeffs = None
-        self.new_camera_matrix = None  # To store the optimal new camera matrix
+        self.new_camera_matrix = None
 
         if calibration_file:
             self.load_calibration(calibration_file)
@@ -48,9 +48,8 @@ class CameraSetup:
         """Applies the calibration to undistort the frame."""
         if self.camera_matrix is not None and self.dist_coeffs is not None:
             undistorted_frame = cv2.undistort(frame, self.camera_matrix, self.dist_coeffs, None, self.new_camera_matrix)
-            print('Frame is undistorted')
             return undistorted_frame
-        print('Frame is not undistorted')
+        print('ERROR: Frame is not undistorted')
         return frame
 
     def get_frame(self):
@@ -58,6 +57,8 @@ class CameraSetup:
         ret, frame = self.cap.read()
         if ret:
             return self.undistort_frame(frame)
+
+        print('ERROR: Frame is not available')
         return None
 
     def release(self):

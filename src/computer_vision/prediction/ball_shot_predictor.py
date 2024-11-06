@@ -51,7 +51,7 @@ class BallPredictor:
             future_position = (future_position_x, future_position_y)
             cv2.arrowedLine(frame, current_position, future_position, (0, 0, 255), 3)
 
-            print(f"Direction: ({direction_slope_x}, {direction_slope_y})")
+            #print(f"Direction: ({direction_slope_x}, {direction_slope_y})")
 
     def draw_ball_path(self, frame):
         if self.pos_list_x and self.pos_list_y:
