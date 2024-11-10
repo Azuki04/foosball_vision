@@ -16,7 +16,7 @@ class SerialSender:
             self.ser = None
 
     def send_current_coordinate(self, x, y):
-        if not (0 <= x <= COURT_HEIGHT) or not (0 <= y <= COURT_WIDTH):
+        if not (0 <= x <= COURT_WIDTH) or not (0 <= y <=  COURT_HEIGHT):
             print("Coordinates are out of range")
             return
 
