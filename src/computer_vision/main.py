@@ -6,6 +6,7 @@ from computer_vision.constants import (
     CAMERA_ID, FPS, CAMERA_WIDTH, CAMERA_HEIGHT,
     COURT_HEIGHT, COURT_WIDTH, COURT_HSV_VALS, SERIAL_URL, BAUD_RATE
 )
+from computer_vision.utils.path_manager import get_config, get_weight
 from computer_vision.court_line_detector import CourtLineDetector
 from computer_vision.trackers.yolo_ball_tracker import BallTracker
 from computer_vision.utils.camera_setup import CameraSetup
@@ -36,11 +37,11 @@ def main():
     sender = SerialSender(SERIAL_URL, BAUD_RATE)
 
     update_court_pts = True
-    last_process_time = time.time() - 5
+    last_process_time = time.time() - 0.5
 
     while True:
         current_time = time.time()
-        if current_time - last_process_time >= 5:
+        if current_time - last_process_time >= 0.5:
             frame = camera_setup.get_frame()
             if frame is None:
                 break
